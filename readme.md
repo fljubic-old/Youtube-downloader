@@ -1,10 +1,8 @@
-#Youtube Downloader
+# Youtube Downloader *and* MP3 Converter
 '''
 I know there are many Youtube Downloaders already, but the converters all take way too much time because they need you to upload
 your video files to their site for them to convert it. This one downloads the files in the highest resolution in mp4 format and
 then gives you the option to convert those to mp3
-
-
 
 
 Hi, this is just a program that I needed to make so I could download Computer Science Crash Course from youtube
