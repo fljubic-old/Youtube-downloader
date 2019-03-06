@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../playlistdownloader/.idea/playlistdownloader.iml" filepath="$PROJECT_DIR$/../playlistdownloader/.idea/playlistdownloader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/youtube downloader and converter.iml" filepath="$PROJECT_DIR$/.idea/youtube downloader and converter.iml" />
+    </modules>
+  </component>
+</project>
