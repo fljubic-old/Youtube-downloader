@@ -1,5 +1,5 @@
 # Youtube Downloader *and* MP3 Converter
-'''
+```
 I know there are many Youtube Downloaders already, but the converters all take way too much time because they need you to upload
 your video files to their site for them to convert it. This one downloads the files in the highest resolution in mp4 format and
 then gives you the option to convert those to mp3
@@ -10,4 +10,4 @@ It wasn't really made with the intention to be shared, but I thought it might he
 Feel free to ask me any questions about the project!
 Also, I didn't make the libraries and don't take any credit for them,
 though if you want to find out more about them, you can do so easily by a few google searches
-'''
+```
