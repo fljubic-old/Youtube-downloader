@@ -1,28 +1,39 @@
 import imageio_ffmpeg
 import moviepy.editor as mp
 from pytube import Playlist, YouTube
+from pytube.helpers import safe_filename
 import os
 
 def main():
-	choice = prompt_type_of_download()
-	link = prompt_link()
-	initial_path = prompt_path()
+	choice = get_type()
+	link = get_link()
+	initial_path = get_path()
 
 	if choice is "Playlist":
-		folder = prompt_folder_creation(initial_path)
+		folder = new_folder(initial_path)
 
-		path_after = create_folder(folder, initial_path)
+		path_after = create_folder(initial_path, folder)
 
 		download_playlist(link, path_after)
 
-		if check_conversion() is True:
-			path_mp3 = create_mp3_folder(initial_path, path_after, folder)
+		if playlist_conversion() is True:
+			path_after_mp3 = create_mp3_folder(initial_path, path_after, folder)
 
-			magic_converting(path_after, path_mp3)
+			magic_playlist_converting(path_after, path_after_mp3)
+	
+	elif choice is "Video":
+		title = download_video(initial_path, link)
+
+		if video_conversion() is True:
+			magic_video_converting(initial_path, title)
 
 
-# Returns 1 for playlist and 2 for video
-def prompt_type_of_download():
+
+
+
+# Prompts user for the type of download (Playlist or just 1 video)
+# Returns "Playlist" or "Video"
+def get_type():
 	print("What would you like to download from youtube?")
 	while True:
 	    try:
@@ -35,7 +46,9 @@ def prompt_type_of_download():
 	    except:
 	        print("Has to be 1 or 2")
 
-def prompt_link():
+# Prompts user for the link of playlist/video
+# Returns the link
+def get_link():
 	while True:
 		try:
 			link = input("Link: ")
@@ -45,8 +58,10 @@ def prompt_link():
 		except:
 			print("The link is not from youtube")	
 	
-def prompt_path():
-	print("\n(Usually: /home/*usr*/Downloads/)")
+# Prompts user for the download path
+# Returns the path
+def get_path():
+	print("\n(Usually: '/home/*usr*/Downloads/')")
 	while True:
 		try:
 			initial_path = input("Create a path where you want to save playlist/video to: ")
@@ -56,14 +71,17 @@ def prompt_path():
 		except:
 			print("Path doesn't exist")
 
-def prompt_folder_creation(initial_path):
+# Prompt user to select a name for the folder that will be created, to download videos from playlist into
+# Returns name of folder
+def new_folder(initial_path):
 	print("\n(Leave empty if you don't want to create a new folder)")
 	folder = input("Choose a map name to save playlist to: ")
     
 	return folder
 
-# Returns path to newly created folder
-def create_folder(folder, initial_path):
+# Creates a folder if it doesn't already exist
+# Returns path to newly created folder or just the old path if no folder was created
+def create_folder(initial_path, folder):
 	if folder:
 		
 		# for instance "~/Downloads/Mac_Miller/"
@@ -87,15 +105,16 @@ def download_playlist(link, path_after):
     	print("\n~You can either try to find a similar playlist or download one by one~\n")
     	pass
 
-def check_conversion():
+# Prompt user if he want's to convert the mp4 to mp3
+def playlist_conversion():
     convert =  input("Would you like to convert the folder to audio?(y/n): ")
-    if str(convert.lower()) in ('y', "ye", "yes", '1'):
+    if convert.lower() in ('y', "ye", "yes"):
         return True
     else:
         return False
-	
 
-# Returns path to mp3 folder
+# Creates a new folder that will hold all the converted files
+# Returns path to new folder
 def create_mp3_folder(initial_path, path_after, folder):
     path_mp3 = initial_path + folder + "mp3/"
 
@@ -104,42 +123,70 @@ def create_mp3_folder(initial_path, path_after, folder):
 
     return path_mp3
 
-
-
-# This is a magic trick, and I mustn't tell you how it works
-def magic_converting(path_after, path_mp3):
+# Converts all mp4 videos to mp3 (into the mp3 folder)
+def magic_playlist_converting(path_after, path_after_mp3):
+	
 	# Creates list of files that were previously downloaded
     files = os.listdir(path_after)
 
+    # Goes file by file and converts each of them one by one
     for file in files:
-            clip = mp.VideoFileClip(path_after + file)
-            # Since the files end with ".mp4", we remove the 4 and replace it with 3
-            clip.audio.write_audiofile(path_mp3 + file[:-1] + '3')
+    		# Location of file that will be converted
+            path_mp4 = path_after + file
+
+    		# Select the file to convert
+            clip = mp.VideoFileClip(path_mp4)
+
+            # The path looks complicated but it's actually really readable if you look at it as this:
+            # It's the initial download path, but with the folder that we've just created and inside of it the
+            # Name of the file that was just downloaded, just changed the ending to mp3 instead of mp4
+			# (Since the files end with ".mp4", we remove the last letter (4) and replace it with 3)
+            path_mp3 = path_after_mp3 + file[:-1] + '3'
+
+			# Convert to mp3
+            clip.audio.write_audiofile(path_mp3)
+            
+            # Close for no bugs (hopefully)
             clip.close()
 
 
+# Returns the name of the file for later use
+def download_video(initial_path, link):
+	yt = YouTube(link)
 
-# # if video  
-# if choice == 2:
-#     yt = YouTube(link)
-    
-#     # download video to ~/Downloads
-#     print("downloading video..")
-#     dl_streams = yt.streams.filter(progressive=True, subtype='mp4',).order_by('resolution').desc().first().download("/home/pandazaar/Downloads/")
-    
-#     # ask if convert file to mp3
-#     print("NOTE: if the title from youtube isn't the same as the title that was downloaded, this won't work.. though you can fix it by just editing the title")
-#     convert = str(input("Would you like to convert the folder to audio only?(y/n): "))
+	print("downloading video..")
+	# Filters out streams which are mp4, ordered by resolution and in descending order(so that the best resolution is on top)
+	# Takes the top stream and downloads it to the initial path set by the user
+	dl_streams = yt.streams.filter(progressive=True, subtype='mp4',).order_by('resolution').desc().first().download(initial_path)
 
-#     if convert.lower() == "y" or convert.lower() == "yes":
+	return safe_filename(yt.title)
 
-#         path_mp3 = oldpath +  yt.title + ".mp3"
-#         print(path_mp3)
+# Prompts user for mp3 conversion
+def video_conversion():
+	convert = input("Would you like to convert the folder to audio only?(y/n): ")
 
-#         clip = mp.VideoFileClip(oldpath + yt.title + ".mp4")
-#         clip.audio.write_audiofile(path_mp3)
-#         clip.close()
+	if convert.lower() in ('y', "ye", "yes"):
+		return True
+	else:
+		return False
 
+# Converts video to mp3
+def magic_video_converting(initial_path, title):
+
+	# Location of file that will be converted
+	path_mp4 =  initial_path + title + ".mp4"
+
+	# Select the file to convert
+	clip = mp.VideoFileClip(path_mp4)
+
+	# This way we set the name of the new file to be the same as the old file, just as mp3 instead of mp4
+	path_mp3 = initial_path +  title + ".mp3"
+
+	# Convert it to mp3
+	clip.audio.write_audiofile(path_mp3)
+
+	# Close for no bugs (hopefully)
+	clip.close()
 
 if __name__ == '__main__':
 	main()
