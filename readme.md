@@ -1,4 +1,6 @@
-# Youtube Downloader and MP3 Converter
+# This project is discontinued, might come back to it if I need it again
+
+## Youtube Downloader and MP3 Converter
 ```
 I know there are many Youtube Downloaders already, but the converters all take way too much time because they
 need you to upload your video files to their site for them to convert it.
