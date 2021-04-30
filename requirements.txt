@@ -12,4 +12,4 @@ proglog==0.1.9
 pytube==9.4.0
 requests==2.21.0
 tqdm==4.31.1
-urllib3==1.25.6
+urllib3==1.25.8
