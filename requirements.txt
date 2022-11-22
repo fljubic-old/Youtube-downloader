@@ -6,7 +6,7 @@ imageio==2.5.0
 imageio-ffmpeg==0.2.0
 moviepy==1.0.0
 numpy==1.16.2
-Pillow==6.2.0
+Pillow==9.3.0
 pkg-resources==0.0.0
 proglog==0.1.9
 pytube==9.4.0
